@@ -24,10 +24,60 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String _category = 'Food';
   DateTime _selectedDate = DateTime.now();
 
+  // void _saveTransaction() async {
+  //   final amount = double.tryParse(_amountController.text);
+  //
+  //   if (amount == null || amount <= 0) return;
+  //
+  //   final transaction = TransactionModel(
+  //     id: const Uuid().v4(),
+  //     amount: amount,
+  //     type: _type,
+  //     category: _category,
+  //     date: _selectedDate,
+  //     note: _noteController.text,
+  //   );
+  //
+  //   await Provider.of<TransactionProvider>(
+  //     context,
+  //     listen: false,
+  //   ).addTransaction(transaction);
+  //   if (!mounted) return;
+  //   // ✅ Clear fields
+  //   _amountController.clear();
+  //   _noteController.clear();
+  //
+  //   setState(() {
+  //     _type = 'expense';
+  //     _category = 'Food';
+  //     _selectedDate = DateTime.now();
+  //   });
+  //
+  //   // ✅ Show Snackbar
+  //   CustomSnackbar.show(context, "Transaction added successfully");
+  // }
   void _saveTransaction() async {
-    final amount = double.tryParse(_amountController.text);
+    final amountText = _amountController.text.trim();
+    final note = _noteController.text.trim();
 
-    if (amount == null || amount <= 0) return;
+    // 🔥 VALIDATION
+    if (amountText.isEmpty) {
+      CustomSnackbar.show(context, "Please enter amount");
+      return;
+    }
+
+    final amount = double.tryParse(amountText);
+
+    if (amount == null || amount <= 0) {
+      CustomSnackbar.show(context, "Enter a valid amount");
+      return;
+    }
+
+    if (_category.isEmpty) {
+      CustomSnackbar.show(context, "Please select category");
+      return;
+    }
+
 
     final transaction = TransactionModel(
       id: const Uuid().v4(),
@@ -35,26 +85,36 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       type: _type,
       category: _category,
       date: _selectedDate,
-      note: _noteController.text,
+      note: note,
     );
 
-    await Provider.of<TransactionProvider>(
-      context,
-      listen: false,
-    ).addTransaction(transaction);
-    if (!mounted) return;
-    // ✅ Clear fields
-    _amountController.clear();
-    _noteController.clear();
+    final provider =
+    Provider.of<TransactionProvider>(context, listen: false);
 
-    setState(() {
-      _type = 'expense';
-      _category = 'Food';
-      _selectedDate = DateTime.now();
-    });
+    try {
+      await provider.addTransaction(transaction);
 
-    // ✅ Show Snackbar
-    CustomSnackbar.show(context, "Transaction added successfully");
+      if (!mounted) return;
+
+      // ✅ Clear fields
+      _amountController.clear();
+      _noteController.clear();
+
+      setState(() {
+        _type = 'expense';
+        _category = 'Food';
+        _selectedDate = DateTime.now();
+      });
+
+      // ✅ Success message
+      CustomSnackbar.show(context, "Transaction added successfully");
+
+    } catch (e) {
+      if (!mounted) return;
+
+      // ❌ Error message
+      CustomSnackbar.show(context, "Failed to save transaction");
+    }
   }
 
   @override
@@ -142,12 +202,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
                     const SizedBox(height: 12),
 
-                    CustomTextField(controller: _noteController, label: 'Note'),
+                    CustomTextField(controller: _noteController, label: 'Note (optional)'),
 
                     const SizedBox(height: 20),
 
                     UElevatedButton(
-                      onPressed: _saveTransaction,
+                      onPressed: _amountController.text.isEmpty ? null : _saveTransaction,
                       child: const Text("Save Transaction"),
                     ),
                   ],

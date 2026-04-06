@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pocket_track/common_widgets/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 
+import '../../common_widgets/button.dart';
 import '../../common_widgets/custom_text_fields.dart';
 import '../../providers/user_provider.dart';
 import '../main_screen.dart';
@@ -36,40 +37,60 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
     }
   }
 
-
   void _saveDetails() async {
-    final firstName = _firstNameController.text;
-    final lastName = _lastNameController.text;
-    final salary = double.tryParse(_salaryController.text);
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
+    final salaryText = _salaryController.text.trim();
 
-    if (firstName.isEmpty || lastName.isEmpty || salary == null) {
-      CustomSnackbar.show(
-        context,
-        "Please fill all the fields",
-      );
+    // 🔥 VALIDATION
+    if (firstName.isEmpty) {
+      CustomSnackbar.show(context, "First name is required");
+      return;
+    }
+
+    if (lastName.isEmpty) {
+      CustomSnackbar.show(context, "Last name is required");
+      return;
+    }
+
+    if (salaryText.isEmpty) {
+      CustomSnackbar.show(context, "Please enter your salary");
+      return;
+    }
+
+    final salary = double.tryParse(salaryText);
+
+    if (salary == null || salary <= 0) {
+      CustomSnackbar.show(context, "Enter a valid salary");
       return;
     }
 
     final userProvider =
     Provider.of<UserProvider>(context, listen: false);
 
-    await userProvider.updateUser(
-      fName: _firstNameController.text,
-      lName: _lastNameController.text,
-      sal: salary,
-      img: _image?.path,
-    );
-    if(!mounted)return;
-    CustomSnackbar.show(
-      context,
-      "Details Saved!",
-    );
+    try {
+      await userProvider.updateUser(
+        fName: firstName,
+        lName: lastName,
+        sal: salary,
+        img: _image?.path,
+      );
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const MainScreen()),
-          (route) => false,
-    );
+      if (!mounted) return;
+
+      CustomSnackbar.show(context, "Details Saved!");
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+            (route) => false,
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+
+      CustomSnackbar.show(context, "Failed to save details");
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -152,8 +173,12 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
             // 🔹 Save Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saveDetails,
+              child: UElevatedButton(
+                onPressed: _firstNameController.text.isEmpty ||
+                    _lastNameController.text.isEmpty ||
+                    _salaryController.text.isEmpty
+                    ? null
+                    : _saveDetails,
                 child: const Text("Save Details"),
               ),
             ),

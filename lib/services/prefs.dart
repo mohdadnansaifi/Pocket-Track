@@ -1,11 +1,23 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsService {
-  static late SharedPreferences _prefs;
+  static SharedPreferences? _prefs;
 
-  // 🔹 Initialize (call once in main)
+  // 🔹 Initialize
   static Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
+    try {
+      _prefs = await SharedPreferences.getInstance();
+    } catch (e) {
+      throw Exception("Prefs initialization failed: $e");
+    }
+  }
+
+  // 🔹 Safety getter
+  static SharedPreferences get prefs {
+    if (_prefs == null) {
+      throw Exception("Prefs not initialized. Call PrefsService.init()");
+    }
+    return _prefs!;
   }
 
   // 🔹 Save User Data
@@ -16,36 +28,49 @@ class PrefsService {
     required String gender,
     String? imagePath,
   }) async {
-    await _prefs.setString('firstName', firstName);
-    await _prefs.setString('lastName', lastName);
-    await _prefs.setDouble('salary', salary);
-    await _prefs.setString('gender', gender);
+    try {
+      await prefs.setString('firstName', firstName);
+      await prefs.setString('lastName', lastName);
+      await prefs.setDouble('salary', salary);
+      await prefs.setString('gender', gender);
 
-    if (imagePath != null) {
-      await _prefs.setString('profileImage', imagePath);
+      if (imagePath != null) {
+        await prefs.setString('profileImage', imagePath);
+      }
+    } catch (e) {
+      throw Exception("Failed to save user data: $e");
     }
   }
 
   // 🔹 Get Data
-  static String get firstName => _prefs.getString('firstName') ?? '';
-  static String get lastName => _prefs.getString('lastName') ?? '';
-  static double get salary => _prefs.getDouble('salary') ?? 0.0;
-  static String get gender => _prefs.getString('gender') ?? '';
-  static String? get profileImage => _prefs.getString('profileImage');
+  static String get firstName => prefs.getString('firstName') ?? '';
+  static String get lastName => prefs.getString('lastName') ?? '';
+  static double get salary => prefs.getDouble('salary') ?? 0.0;
+  static String get gender => prefs.getString('gender') ?? '';
+  static String? get profileImage => prefs.getString('profileImage');
 
   // 🔹 Check if user exists
-  static bool get isUserSaved => _prefs.containsKey('firstName');
+  static bool get isUserSaved => prefs.containsKey('firstName');
 
-  // 🔹 Clear Data (logout)
+  // 🔹 Clear Data
   static Future<void> clear() async {
-    await _prefs.clear();
+    try {
+      await prefs.clear();
+    } catch (e) {
+      throw Exception("Failed to clear prefs: $e");
+    }
   }
 
+  // 🔹 Theme
   static Future<void> saveThemeMode(String mode) async {
-    await _prefs.setString('themeMode', mode);
+    try {
+      await prefs.setString('themeMode', mode);
+    } catch (e) {
+      throw Exception("Failed to save theme: $e");
+    }
   }
 
   static String getThemeMode() {
-    return _prefs.getString('themeMode') ?? 'system';
+    return prefs.getString('themeMode') ?? 'system';
   }
 }
