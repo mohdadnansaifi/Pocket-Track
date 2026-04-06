@@ -71,7 +71,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final imagePath = _image?.path ?? PrefsService.profileImage;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile"),
+      appBar: AppBar(title: const Text("Edit Profile",style: TextStyle(color: UColors.white),),
       backgroundColor: UColors.primary,),
 
       body: SingleChildScrollView(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_track/common_widgets/custom_circle_avatar.dart';
 import 'package:pocket_track/screens/Profile%20screen/setting_screen.dart';
+import 'package:pocket_track/utils/helpers/helper_functions.dart';
 import 'package:provider/provider.dart';
 import '../../providers/transactions_provider.dart';
 import '../../providers/user_provider.dart';
@@ -40,8 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context);
     final imagePath = user.imagePath;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),centerTitle: true,
+      appBar: AppBar(title: const Text("Profile",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: UColors.white),),centerTitle: true,
       backgroundColor: UColors.primary),
 
       body: Padding(

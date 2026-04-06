@@ -18,7 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
        final themeProvider = Provider.of<ThemeProvider>(context);
 
       return Scaffold(
-        appBar: AppBar(title: const Text("Settings"),
+        appBar: AppBar(title: const Text("Settings",style: TextStyle(color: UColors.white),),
         backgroundColor: UColors.primary,),
 
         body: SingleChildScrollView(
