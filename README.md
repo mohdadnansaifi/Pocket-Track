@@ -89,7 +89,26 @@ lib/
 * Multi-language support
 
 ---
+## 📸 Screenshots
 
+### 🏠 Home Screen
+![Add](screenshots/Home_light.jpeg)
+![Add](screenshots/Home_dark.jpeg)
+
+### ➕ Add Transaction
+![Add](screenshots/Add_transaction_dark.jpeg)
+![Add](screenshots/Add_transaction_light.jpeg)
+
+### 📊 Insights
+![Insights](screenshots/Inshight_dark.jpeg)
+![Insights](screenshots/Inshight_light.jpeg)
+
+### 👤 Profile
+![Profile](screenshots/Profile_dark.jpeg)
+![Profile](screenshots/Profile_light.jpeg)
+
+
+---
 ## 👨‍💻 Author
 
 **Adnan Saifi**
